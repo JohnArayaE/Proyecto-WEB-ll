@@ -8,6 +8,7 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+Route::patch('vehicle/{id}/restore', [VehicleController::class, 'restore']);
 
 Route::apiResource('vehicle', VehicleController::class)
     ->missing(function (Request $request) {
