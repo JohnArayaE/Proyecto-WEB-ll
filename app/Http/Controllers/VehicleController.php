@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\UpdateVehicleRequest;
 use App\Models\Vehicle;
 use Illuminate\Http\Request;
 use App\Http\Requests\StoreVehicleRequest;
@@ -41,17 +42,27 @@ class VehicleController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Vehicle $vehicle)
     {
         //
+        return response()->json([
+             'message' => 'Curso encontrado correctamente.',
+            'data' => $vehicle,
+        ], 200);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateVehicleRequest $request, Vehicle $vehicle)
     {
         //
+        $vehicle->update($request->validated());
+
+        return response()->json([
+            'message' => 'Curso actualizado correctamente.',
+            'data' => $vehicle,
+        ], 200);
     }
 
     /**
