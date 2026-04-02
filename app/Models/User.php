@@ -4,13 +4,16 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -20,7 +23,9 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'telephone',
         'password',
+        'role_id'
     ];
 
     /**
@@ -44,5 +49,46 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Relación: un usuario pertenece a un rol.
+     * users.role_id -> roles.id
+     */
+    public function role(): BelongsTo
+    {
+        return $this->belongsTo(Role::class, 'role_id', 'id');
+    }
+
+    /**
+     * Relación: un chofer puede tener muchas solicitudes.
+     */
+    public function requests(): HasMany
+    {
+        return $this->hasMany(RequestModel::class, 'driver_id', 'id');
+    }
+
+    /**
+     * Relación: un chofer puede tener muchos viajes.
+     */
+    public function trips(): HasMany
+    {
+        return $this->hasMany(Trip::class, 'driver_id', 'id');
+    }
+
+    /**
+     * Relación: un chofer puede tener muchas asignaciones.
+     */
+    public function assignments(): HasMany
+    {
+        return $this->hasMany(Assignment::class, 'driver_id', 'id');
+    }
+
+    /**
+     * Relación: un operador puede crear muchas asignaciones.
+     */
+    public function assignmentsCreated(): HasMany
+    {
+        return $this->hasMany(Assignment::class, 'assigned_by', 'id');
     }
 }
