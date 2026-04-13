@@ -78,21 +78,19 @@ class VehicleController extends Controller
         ], 200);
     }
 
-    public function restore($id)
+    public function restore($vehicle)
     {
-        $Vehicle = Vehicle::onlyTrashed()->find($id);
-
-        if (!$Vehicle) {
+        if (! $vehicle->trashed()) {
             return response()->json([
-                'message' => 'Vehiculo no encontrado.',
+                'message' => 'Usuario no encontrado o no está eliminado.',
             ], 404);
         }
 
-        $Vehicle->restore();
+        $vehicle->restore();
 
         return response()->json([
-            'message' => 'Vehiculo restaurado correctamente.',
-            'data' => $Vehicle,
+            'message' => 'Usuario reactivado correctamente.',
+            'data' => $vehicle->fresh()->load('role'),
         ], 200);
     }
 }
