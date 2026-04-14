@@ -34,7 +34,7 @@ class VehicleController extends Controller
         $vehicle->save();
 
         return response()->json([
-            'message' => 'Curso creado correctamente.',
+            'message' => 'Vehiculo creado correctamente.',
             'data' => $vehicle,
         ], 201);
     }
@@ -46,7 +46,7 @@ class VehicleController extends Controller
     {
         //
         return response()->json([
-             'message' => 'Curso encontrado correctamente.',
+            'message' => 'Vehiculo encontrado correctamente.',
             'data' => $vehicle,
         ], 200);
     }
@@ -60,7 +60,7 @@ class VehicleController extends Controller
         $vehicle->update($request->validated());
 
         return response()->json([
-            'message' => 'Curso actualizado correctamente.',
+            'message' => 'Vehiculo actualizado correctamente.',
             'data' => $vehicle,
         ], 200);
     }
@@ -82,14 +82,14 @@ class VehicleController extends Controller
     {
         if (! $vehicle->trashed()) {
             return response()->json([
-                'message' => 'Usuario no encontrado o no está eliminado.',
+                'message' => 'Vehiculo no encontrado o no está eliminado.',
             ], 404);
         }
 
         $vehicle->restore();
 
         return response()->json([
-            'message' => 'Usuario reactivado correctamente.',
+            'message' => 'Vehiculo reactivado correctamente.',
             'data' => $vehicle->fresh()->load('role'),
         ], 200);
     }
