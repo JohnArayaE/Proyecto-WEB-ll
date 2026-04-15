@@ -78,7 +78,7 @@ class VehicleController extends Controller
         ], 200);
     }
 
-    public function restore($vehicle)
+    public function restore(Vehicle $vehicle)
     {
         if (! $vehicle->trashed()) {
             return response()->json([
@@ -93,4 +93,5 @@ class VehicleController extends Controller
             'data' => $vehicle->fresh()->load('role'),
         ], 200);
     }
+    
 }
