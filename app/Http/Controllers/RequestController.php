@@ -118,5 +118,4 @@ class RequestController extends Controller
         ], 200);
     }
     
-
 }
