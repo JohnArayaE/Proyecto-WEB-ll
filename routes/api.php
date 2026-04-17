@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Maintenance;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
@@ -43,7 +44,7 @@ Route::apiResource('vehicle', VehicleController::class)
     ->middlewareFor('destroy', 'can:delete,vehicle')
     ->missing(function (Request $request) {
         return response()->json([
-            'message' => 'Usuario no encontrado.',
+            'message' => 'Vehiculo no encontrado.',
         ], 404);
     });
 
@@ -60,7 +61,7 @@ Route::apiResource('request', RequestController::class)
     ->middlewareFor('destroy', 'can:delete,request')
     ->missing(function (Request $request) {
         return response()->json([
-            'message' => 'Usuario no encontrado.',
+            'message' => 'Solicitud no encontrado.',
         ], 404);
     }); 
    
@@ -76,3 +77,20 @@ Route::get('requests/{request}/with-vehicle', [RequestController::class, 'showWi
 Route::get('requests/{request}/with-all', [RequestController::class, 'showWithAll'])
     ->middleware(['auth:sanctum', 'can:showWithAll,request']); 
     
+
+Route::patch('maintenance/{maintenance}/restore', [Maintenance::class, 'restore'])
+    ->withTrashed()
+    ->middleware('auth:sanctum', 'can:restore,vehicle');
+
+Route::apiResource('maintenance', RequestController::class)
+    ->middleware('auth:sanctum')
+    ->middlewareFor('index', 'can:viewAny,App\Models\Maintenance')
+    ->middlewareFor('show', 'can:view,maintenance')
+    ->middlewareFor('store', 'can:create,App\Models\Maintenance')
+    ->middlewareFor('update', 'can:update,maintenance')
+    ->middlewareFor('destroy', 'can:delete,maintenance')
+    ->missing(function (Request $request) {
+        return response()->json([
+            'message' => 'Mantenimeintos no encontrado.',
+        ], 404);
+    }); 
