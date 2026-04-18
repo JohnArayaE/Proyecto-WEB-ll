@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\VehicleController;
+use App\Http\Controllers\RouteController;
+
 
 Route::post('login', [AuthController::class, 'login']);
 Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
@@ -29,6 +31,7 @@ Route::apiResource('users', UserController::class)
         ], 404);
     });
 
+
 Route::patch('vehicle/{vehicle}/restore', [VehicleController::class, 'restore'])
     ->withTrashed()
     ->middleware('auth:sanctum', 'can:restore,vehicle');
@@ -45,3 +48,23 @@ Route::apiResource('vehicle', VehicleController::class)
             'message' => 'Usuario no encontrado.',
         ], 404);
     });
+// Restaurar ruta eliminada
+Route::patch('routes/{route}/restore', [RouteController::class, 'restore'])
+    ->withTrashed()
+    ->middleware(['auth:sanctum', 'can:restore,route']);
+
+
+// CRUD completo de rutas
+Route::apiResource('routes', RouteController::class)
+    ->middleware('auth:sanctum')
+    ->middlewareFor('index', 'can:viewAny,App\Models\Route')
+    ->middlewareFor('show', 'can:view,route')
+    ->middlewareFor('store', 'can:create,App\Models\Route')
+    ->middlewareFor('update', 'can:update,route')
+    ->middlewareFor('destroy', 'can:delete,route')
+    ->missing(function (Request $request) {
+        return response()->json([
+            'message' => 'Ruta no encontrada.',
+        ], 404);
+    });
+
