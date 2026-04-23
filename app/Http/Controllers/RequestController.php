@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreRequestRequest;
 use App\Http\Requests\UpdateRequestRequest;
-use App\Models\Request;
+use App\Models\Request as RequestModel;
 
 class RequestController extends Controller
 {
@@ -14,7 +14,7 @@ class RequestController extends Controller
     public function index()
     {
         //
-        $request = Request::whereNull('deleted_at')->latest()->paginate(10);
+        $request = RequestModel::whereNull('deleted_at')->latest()->paginate(10);
 
         return response()->json([
             'message' => 'Listado de Solicitud',
@@ -28,7 +28,7 @@ class RequestController extends Controller
     public function store(StoreRequestRequest $request)
     {
         //
-        $request = Request::create($request->validated());
+        $request = RequestModel::create($request->validated());
 
         return response()->json([
             'message' => 'Solicitud Creado Correctamente',
@@ -39,9 +39,10 @@ class RequestController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Request $request)
+    public function show(RequestModel $request)
     {
         //
+        //dd($request);
         return response()->json([
             'message' => 'Solicitud encontrado correctamente.',
             'data' => $request,
@@ -51,7 +52,7 @@ class RequestController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateRequestRequest $Uptaderequest, Request $request)
+    public function update(UpdateRequestRequest $Uptaderequest, RequestModel $request)
     {
         //
         $request->update($Uptaderequest->validated());
@@ -65,7 +66,7 @@ class RequestController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Request $request)
+    public function destroy(RequestModel $request)
     {
         //
         $request->delete();
@@ -75,7 +76,7 @@ class RequestController extends Controller
         ], 200);
     }
 
-    public function restore(Request $request)
+    public function restore(RequestModel $request)
     {
         if (! $request->trashed()) {
             return response()->json([
@@ -91,7 +92,7 @@ class RequestController extends Controller
         ], 200);
     }
 
-    public function showWithUser(Request $request)
+    public function showWithUser(RequestModel $request)
     {
         //
         return response()->json([
@@ -100,7 +101,7 @@ class RequestController extends Controller
         ], 200);
     }
 
-    public function showWithVehicle(Request $request)
+    public function showWithVehicle(RequestModel $request)
     {
         //
         return response()->json([
@@ -109,7 +110,7 @@ class RequestController extends Controller
         ], 200);
     }
 
-    public function showWithAll(Request $request)
+    public function showWithAll(RequestModel $request)
     {
         //
         return response()->json([

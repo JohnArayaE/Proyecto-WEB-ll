@@ -20,7 +20,7 @@ class MaintenanceController extends Controller
         $maintenance = Maintenance::with('vehicle')->whereNull('deleted_at')->latest()->paginate(10);
 
         return response()->json([
-            'message' => 'Listado de Solicitud',
+            'message' => 'Listado de mantenimientos',
             'data' => $maintenance,
         ], 200);
     }
@@ -46,7 +46,7 @@ class MaintenanceController extends Controller
     {
         //
         return response()->json([
-            'message' => 'Vehiculo encontrado correctamente.',
+            'message' => 'Mantenimiento encontrado correctamente.',
             'data' => $maintenance->load('vehicle'),
         ], 200);
 
@@ -62,7 +62,7 @@ class MaintenanceController extends Controller
         $maintenance->update($request->validated());
 
         return response()->json([
-            'message' => 'Vehiculo actualizado correctamente.',
+            'message' => 'Mantenimiento actualizado correctamente.',
             'data' => $maintenance,
         ], 200);
 
@@ -77,7 +77,7 @@ class MaintenanceController extends Controller
         $maintenance->delete();
 
         return response()->json([
-            'message' => 'Vehiculo eliminado correctamente',
+            'message' => 'Mantenimiento eliminado correctamente',
         ], 200);
     }
 
@@ -85,15 +85,15 @@ class MaintenanceController extends Controller
     {
         if (! $maintenance->trashed()) {
             return response()->json([
-                'message' => 'Vehiculo no encontrado o no está eliminado.',
+                'message' => 'Mantenimiento no encontrado o no está eliminado.',
             ], 404);
         }
 
         $maintenance->restore();
 
         return response()->json([
-            'message' => 'Vehiculo reactivado correctamente.',
-            'data' => $maintenance->fresh()->load('role'),
+            'message' => 'Mantenimeinto reactivado correctamente.',
+            'data' => $maintenance->fresh(),
         ], 200);
     }
 }

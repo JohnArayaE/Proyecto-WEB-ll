@@ -90,7 +90,7 @@ class VehicleController extends Controller
 
         return response()->json([
             'message' => 'Vehiculo reactivado correctamente.',
-            'data' => $vehicle->fresh()->load('role'),
+            'data' => $vehicle->fresh(),
         ], 200);
     }
     

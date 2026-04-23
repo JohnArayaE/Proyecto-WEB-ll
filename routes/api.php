@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\MaintenanceController;
 use App\Models\Maintenance;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -50,12 +51,12 @@ Route::apiResource('vehicle', VehicleController::class)
 
 Route::patch('request/{request}/restore', [RequestController::class, 'restore'])
     ->withTrashed()
-    ->middleware('auth:sanctum', 'can:restore,vehicle');
+    ->middleware('auth:sanctum', 'can:restore,request');
 
 Route::apiResource('request', RequestController::class)
     ->middleware('auth:sanctum')
     ->middlewareFor('index', 'can:viewAny,App\Models\Request')
-    ->middlewareFor('show', 'can:view,resquest')
+    ->middlewareFor('show', 'can:view,request')
     ->middlewareFor('store', 'can:create,App\Models\Request')
     ->middlewareFor('update', 'can:update,request')
     ->middlewareFor('destroy', 'can:delete,request')
@@ -65,8 +66,6 @@ Route::apiResource('request', RequestController::class)
         ], 404);
     }); 
    
-Route::post('requests/{request}/restore', [RequestController::class, 'restore'])
-    ->middleware(['auth:sanctum', 'can:restore,request']);
 
 Route::get('requests/{request}/with-user', [RequestController::class, 'showWithUser'])
     ->middleware(['auth:sanctum', 'can:showWithUser,request']);
@@ -78,11 +77,11 @@ Route::get('requests/{request}/with-all', [RequestController::class, 'showWithAl
     ->middleware(['auth:sanctum', 'can:showWithAll,request']); 
     
 
-Route::patch('maintenance/{maintenance}/restore', [Maintenance::class, 'restore'])
+Route::patch('maintenance/{maintenance}/restore', [MaintenanceController::class, 'restore'])
     ->withTrashed()
-    ->middleware('auth:sanctum', 'can:restore,vehicle');
+    ->middleware('auth:sanctum', 'can:restore,maintenance');
 
-Route::apiResource('maintenance', RequestController::class)
+Route::apiResource('maintenance', MaintenanceController::class)
     ->middleware('auth:sanctum')
     ->middlewareFor('index', 'can:viewAny,App\Models\Maintenance')
     ->middlewareFor('show', 'can:view,maintenance')

@@ -24,6 +24,8 @@ class RequestPolicy
      */
     public function view(User $user, Request $request): Response
     {
+
+        //  dd($user->role_id);
          return (int) $user->role_id === 1 || $user->role_id === 2 || $user->role_id === 3
             ? Response::allow()
             : Response::deny("No tiene permiso para el módulo de Solicitudes");
