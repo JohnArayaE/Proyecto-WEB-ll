@@ -92,4 +92,16 @@ class UserController extends Controller
             'data' => $user->fresh()->load('role'),
         ], 200);
     }
+    public function inactive()
+    {
+        $users = User::onlyTrashed()
+            ->with('role')
+            ->latest()
+            ->paginate(10);
+
+        return response()->json([
+            'message' => 'Listado de usuarios inactivos',
+            'data' => $users,
+        ], 200);
+    }
 }
