@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\MaintenanceController;
+use App\Models\Maintenance;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
@@ -7,6 +9,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\RouteController;
 
+use App\Http\Controllers\RequestController;
 
 Route::post('login', [AuthController::class, 'login']);
 Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
@@ -68,3 +71,47 @@ Route::apiResource('routes', RouteController::class)
         ], 404);
     });
 
+Route::patch('request/{request}/restore', [RequestController::class, 'restore'])
+    ->withTrashed()
+    ->middleware('auth:sanctum', 'can:restore,request');
+
+Route::apiResource('request', RequestController::class)
+    ->middleware('auth:sanctum')
+    ->middlewareFor('index', 'can:viewAny,App\Models\Request')
+    ->middlewareFor('show', 'can:view,request')
+    ->middlewareFor('store', 'can:create,App\Models\Request')
+    ->middlewareFor('update', 'can:update,request')
+    ->middlewareFor('destroy', 'can:delete,request')
+    ->missing(function (Request $request) {
+        return response()->json([
+            'message' => 'Solicitud no encontrado.',
+        ], 404);
+    }); 
+   
+
+Route::get('requests/{request}/with-user', [RequestController::class, 'showWithUser'])
+    ->middleware(['auth:sanctum', 'can:showWithUser,request']);
+
+Route::get('requests/{request}/with-vehicle', [RequestController::class, 'showWithVehicle'])
+    ->middleware(['auth:sanctum', 'can:showWithVehicle,request']);
+
+Route::get('requests/{request}/with-all', [RequestController::class, 'showWithAll'])
+    ->middleware(['auth:sanctum', 'can:showWithAll,request']); 
+    
+
+Route::patch('maintenance/{maintenance}/restore', [MaintenanceController::class, 'restore'])
+    ->withTrashed()
+    ->middleware('auth:sanctum', 'can:restore,maintenance');
+
+Route::apiResource('maintenance', MaintenanceController::class)
+    ->middleware('auth:sanctum')
+    ->middlewareFor('index', 'can:viewAny,App\Models\Maintenance')
+    ->middlewareFor('show', 'can:view,maintenance')
+    ->middlewareFor('store', 'can:create,App\Models\Maintenance')
+    ->middlewareFor('update', 'can:update,maintenance')
+    ->middlewareFor('destroy', 'can:delete,maintenance')
+    ->missing(function (Request $request) {
+        return response()->json([
+            'message' => 'Mantenimeintos no encontrado.',
+        ], 404);
+    }); 
