@@ -8,8 +8,9 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\RouteController;
-
 use App\Http\Controllers\RequestController;
+use App\Http\Controllers\AssignmentController;
+
 
 Route::post('login', [AuthController::class, 'login']);
 Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
@@ -71,6 +72,7 @@ Route::apiResource('routes', RouteController::class)
         ], 404);
     });
 
+
 Route::patch('request/{request}/restore', [RequestController::class, 'restore'])
     ->withTrashed()
     ->middleware('auth:sanctum', 'can:restore,request');
@@ -115,3 +117,26 @@ Route::apiResource('maintenance', MaintenanceController::class)
             'message' => 'Mantenimeintos no encontrado.',
         ], 404);
     }); 
+
+// Restaurar asignación eliminada
+Route::patch('assignments/{assignment}/restore', [AssignmentController::class, 'restore'])
+    ->withTrashed()
+    ->middleware(['auth:sanctum', 'can:restore,assignment']);
+
+Route::get('assignments/inactive', [AssignmentController::class, 'inactive'])
+    ->middleware(['auth:sanctum', 'can:viewAny,App\Models\Assignment']);
+
+// CRUD completo de asignaciones
+Route::apiResource('assignments', AssignmentController::class)
+    ->middleware('auth:sanctum')
+    ->middlewareFor('index', 'can:viewAny,App\Models\Assignment')
+    ->middlewareFor('show', 'can:view,assignment')
+    ->middlewareFor('store', 'can:create,App\Models\Assignment')
+    ->middlewareFor('update', 'can:update,assignment')
+    ->middlewareFor('destroy', 'can:delete,assignment')
+    ->missing(function (Request $request) {
+        return response()->json([
+            'message' => 'Asignación no encontrada.',
+        ], 404);
+    });
+
