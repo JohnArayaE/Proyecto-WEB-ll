@@ -11,7 +11,13 @@ class AssignmentController extends Controller
 {
     public function index()
     {
-        $assignments = Assignment::whereNull('deleted_at')->latest()->paginate(10);
+        $assignments = Assignment::with([
+            'driver:id,name',
+            'vehicle:id,plate,status',
+            'assignedBy:id,name'
+        ])->whereNull('deleted_at')
+          ->latest()
+          ->paginate(10);
 
         return response()->json([
             'message' => 'Listado de asignaciones',
@@ -23,7 +29,6 @@ class AssignmentController extends Controller
     {
         $vehicle = Vehicle::find($request->vehicle_id);
 
-        // Validar estado del vehículo
         if ($vehicle->status === 'under maintenance') {
             return response()->json([
                 'message' => 'El vehículo está en mantenimiento.'
@@ -36,16 +41,18 @@ class AssignmentController extends Controller
             ], 422);
         }
 
-        // Crear asignación
         $assignment = Assignment::create($request->validated());
 
-        // Cambiar estado a ocupado
         $vehicle->status = 'unavailable';
         $vehicle->save();
 
         return response()->json([
             'message' => 'Asignación creada correctamente',
-            'data' => $assignment
+            'data' => $assignment->load([
+                'driver:id,name',
+                'vehicle:id,plate,status',
+                'assignedBy:id,name'
+            ])
         ], 201);
     }
 
@@ -53,7 +60,11 @@ class AssignmentController extends Controller
     {
         return response()->json([
             'message' => 'Asignación encontrada correctamente.',
-            'data' => $assignment,
+            'data' => $assignment->load([
+                'driver:id,name',
+                'vehicle:id,plate,status',
+                'assignedBy:id,name'
+            ]),
         ], 200);
     }
 
@@ -61,7 +72,6 @@ class AssignmentController extends Controller
     {
         $vehicle = Vehicle::find($request->vehicle_id ?? $assignment->vehicle_id);
 
-        // Validar estado del vehículo
         if ($vehicle->status === 'under maintenance') {
             return response()->json([
                 'message' => 'El vehículo está en mantenimiento.'
@@ -78,7 +88,11 @@ class AssignmentController extends Controller
 
         return response()->json([
             'message' => 'Asignación actualizada correctamente.',
-            'data' => $assignment,
+            'data' => $assignment->load([
+                'driver:id,name',
+                'vehicle:id,plate,status',
+                'assignedBy:id,name'
+            ]),
         ], 200);
     }
 
@@ -88,10 +102,11 @@ class AssignmentController extends Controller
 
         $assignment->delete();
 
-        // Volver a disponible
         if ($vehicle) {
             $vehicle->status = 'available';
             $vehicle->save();
+            $assignment->status = 'cancelled';
+            $assignment->save();
         }
 
         return response()->json([
@@ -109,7 +124,6 @@ class AssignmentController extends Controller
 
         $vehicle = $assignment->vehicle;
 
-        // Validar antes de restaurar
         if ($vehicle && $vehicle->status !== 'available') {
             return response()->json([
                 'message' => 'El vehículo no está disponible para restaurar la asignación.'
@@ -118,15 +132,37 @@ class AssignmentController extends Controller
 
         $assignment->restore();
 
-        // Marcar como ocupado
         if ($vehicle) {
             $vehicle->status = 'unavailable';
             $vehicle->save();
+            $assignment->status = 'active';
+            $assignment->save();
         }
 
         return response()->json([
             'message' => 'Asignación reactivada correctamente.',
-            'data' => $assignment,
+            'data' => $assignment->load([
+                'driver:id,name',
+                'vehicle:id,plate,status',
+                'assignedBy:id,name'
+            ]),
+        ], 200);
+    }
+
+    public function inactive()
+    {
+        $assignments = Assignment::onlyTrashed()
+            ->with([
+                'driver:id,name',
+                'vehicle:id,plate,status',
+                'assignedBy:id,name'
+            ])
+            ->latest()
+            ->paginate(10);
+
+        return response()->json([
+            'message' => 'Listado de asignaciones inactivas',
+            'data' => $assignments,
         ], 200);
     }
 }

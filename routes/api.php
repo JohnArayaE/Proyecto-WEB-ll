@@ -73,6 +73,8 @@ Route::patch('assignments/{assignment}/restore', [AssignmentController::class, '
     ->withTrashed()
     ->middleware(['auth:sanctum', 'can:restore,assignment']);
 
+Route::get('assignments/inactive', [AssignmentController::class, 'inactive'])
+    ->middleware(['auth:sanctum', 'can:viewAny,App\Models\Assignment']);
 
 // CRUD completo de asignaciones
 Route::apiResource('assignments', AssignmentController::class)
