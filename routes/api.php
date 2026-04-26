@@ -20,7 +20,9 @@ Route::patch('users/{user}/restore', [UserController::class, 'restore'])
     ->withTrashed()
     ->middleware(['auth:sanctum', 'can:restore,user']);
 
-
+Route::patch('users/{id}/restore', [UserController::class, 'restore']);
+Route::get('users/inactive', [UserController::class, 'inactive'])
+    ->middleware(['auth:sanctum', 'can:viewAny,App\Models\User']);
 // CRUD completo de usuarios
 Route::apiResource('users', UserController::class)
     ->middleware('auth:sanctum')

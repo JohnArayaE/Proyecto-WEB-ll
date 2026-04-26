@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-
+use App\Models\Request as RequestModel;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
@@ -68,7 +68,6 @@ class User extends Authenticatable
     {
         return $this->hasMany(RequestModel::class, 'driver_id', 'id');
     }
-
     /**
      * Relación: un chofer puede tener muchos viajes.
      */
