@@ -9,8 +9,9 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\RouteController;
-
 use App\Http\Controllers\RequestController;
+use App\Http\Controllers\AssignmentController;
+
 
 Route::post('login', [AuthController::class, 'login']);
 Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
@@ -20,7 +21,9 @@ Route::patch('users/{user}/restore', [UserController::class, 'restore'])
     ->withTrashed()
     ->middleware(['auth:sanctum', 'can:restore,user']);
 
-
+Route::patch('users/{id}/restore', [UserController::class, 'restore']);
+Route::get('users/inactive', [UserController::class, 'inactive'])
+    ->middleware(['auth:sanctum', 'can:viewAny,App\Models\User']);
 // CRUD completo de usuarios
 Route::apiResource('users', UserController::class)
     ->middleware('auth:sanctum')
@@ -71,6 +74,7 @@ Route::apiResource('routes', RouteController::class)
             'message' => 'Ruta no encontrada.',
         ], 404);
     });
+
 
 Route::patch('request/{request}/restore', [RequestController::class, 'restore'])
     ->withTrashed()
@@ -133,3 +137,26 @@ Route::apiResource('trip', TripController::class)
             'message' => 'Viaje no encontrado.',
         ], 404);
     }); 
+
+// Restaurar asignación eliminada
+Route::patch('assignments/{assignment}/restore', [AssignmentController::class, 'restore'])
+    ->withTrashed()
+    ->middleware(['auth:sanctum', 'can:restore,assignment']);
+
+Route::get('assignments/inactive', [AssignmentController::class, 'inactive'])
+    ->middleware(['auth:sanctum', 'can:viewAny,App\Models\Assignment']);
+
+// CRUD completo de asignaciones
+Route::apiResource('assignments', AssignmentController::class)
+    ->middleware('auth:sanctum')
+    ->middlewareFor('index', 'can:viewAny,App\Models\Assignment')
+    ->middlewareFor('show', 'can:view,assignment')
+    ->middlewareFor('store', 'can:create,App\Models\Assignment')
+    ->middlewareFor('update', 'can:update,assignment')
+    ->middlewareFor('destroy', 'can:delete,assignment')
+    ->missing(function (Request $request) {
+        return response()->json([
+            'message' => 'Asignación no encontrada.',
+        ], 404);
+    });
+
