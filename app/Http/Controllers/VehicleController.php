@@ -14,22 +14,19 @@ class VehicleController extends Controller
      */
     public function index(Request $request)
     {
-        $status = $request->get('status_filter', 'available');
-        
+        $allowedStatuses = ['available', 'unavailable', 'under_maintenance'];
+        $status = $request->get('status_filter');
         $query = Vehicle::query();
-
-        if ($status === 'all') {
-            $query->withTrashed(); 
-        } 
+        if ($status === 'all' || !in_array($status, array_merge($allowedStatuses, ['inactive']))) {
+            $query->whereNull('deleted_at'); 
+        }
         elseif ($status === 'inactive') {
             $query->onlyTrashed(); 
         } 
         else {
-
             $query->where('status', $status)
                 ->whereNull('deleted_at'); 
         }
-
         $vehicles = $query->latest()->paginate(10);
 
         return response()->json([
