@@ -125,6 +125,9 @@ Route::patch('trip/{trip}/restore', [TripController::class, 'restore'])
     ->withTrashed()
     ->middleware('auth:sanctum', 'can:restore,trip');
 
+Route::post('trip/checkAvailability', [TripController::class, 'checkAvailability']);
+
+
 Route::apiResource('trip', TripController::class)
     ->middleware('auth:sanctum')
     ->middlewareFor('index', 'can:viewAny,App\Models\Trip')
