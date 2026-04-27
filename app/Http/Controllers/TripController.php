@@ -6,6 +6,7 @@ use App\Http\Requests\StoreTripRequest;
 use App\Http\Requests\UpdateTripRequest;
 use App\Models\Trip;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class TripController extends Controller
 {
@@ -28,14 +29,22 @@ class TripController extends Controller
      */
     public function store(StoreTripRequest $request)
     {
-        //
-        $vehicle = Trip::create($request->validated());
+        $request->validated();
 
-        $vehicle->save();
+        DB::statement('CALL assign_trip(?, ?, ?, ?, ?, ?, ?, ?, ?)', [
+            $request->user_id,
+            $request->vehicle_id,
+            $request->route_id,
+            $request->departure_time,
+            $request->return_time,
+            $request->km_departure,
+            $request->km_return,
+            $request->observations,
+            $request->status
+        ]);
 
         return response()->json([
-            'message' => 'Viaje creado correctamente.',
-            'data' => $vehicle,
+            'message' => 'Viaje creado correctamente'
         ], 201);
     }
 
@@ -93,4 +102,21 @@ class TripController extends Controller
             'data' => $trip->fresh(),
         ], 200);
     }
+
+    public function checkAvailability(Request $request)
+    {
+        $result = DB::select(
+            'SELECT vehicle_available(?, ?, ?) as available',
+            [
+                $request->vehicle_id,
+                $request->departure_time,
+                $request->return_time
+            ]
+        );
+
+        return response()->json([
+            'available' => $result[0]->available
+        ]);
+    }
+        
 }
