@@ -13,7 +13,7 @@ class VehiclePolicy
      */
     public function viewAny(User $user): Response
     {
-        return (int) $user->role_id === 1 || $user->role_id === 3
+        return (int) $user->role_id === 1 || $user->role_id === 2
             ? Response::allow()
             : Response::deny("No tiene permiso para el módulo de vehiculo");
         
@@ -24,7 +24,7 @@ class VehiclePolicy
      */
     public function view(User $user, Vehicle $vehicle): Response
     {
-        return (int) $user->role_id === 1 || $user->role_id === 3
+        return (int) $user->role_id === 1 || $user->role_id === 2
             ? Response::allow()
             : Response::deny("No tiene permiso para el módulo de vehiculo");
         
@@ -35,7 +35,7 @@ class VehiclePolicy
      */
     public function create(User $user): Response
     {
-        return (int) $user->role_id === 1 || $user->role_id === 3
+        return (int) $user->role_id === 1 || $user->role_id === 2
             ? Response::allow()
             : Response::deny("No tiene permiso para el módulo de vehiculo");
         
@@ -46,7 +46,7 @@ class VehiclePolicy
      */
     public function update(User $user, Vehicle $vehicle): Response
     {
-        return (int) $user->role_id === 1 || $user->role_id === 3
+        return (int) $user->role_id === 1 || $user->role_id === 2
             ? Response::allow()
             : Response::deny("No tiene permiso para el módulo de vehiculo");
         
@@ -57,7 +57,7 @@ class VehiclePolicy
      */
     public function delete(User $user, Vehicle $vehicle): Response
     {
-        return (int) $user->role_id === 1 || $user->role_id === 3
+        return (int) $user->role_id === 1 || $user->role_id === 2
             ? Response::allow()
             : Response::deny("No tiene permiso para el módulo de vehiculo");
     }
@@ -67,7 +67,7 @@ class VehiclePolicy
      */
     public function restore(User $user, Vehicle $vehicle): Response
     {
-        return (int) $user->role_id === 1 || $user->role_id === 3
+        return (int) $user->role_id === 1 || $user->role_id === 2
             ? Response::allow()
             : Response::deny("No tiene permiso para el módulo de vehiculo");
     }
