@@ -26,7 +26,6 @@ class ReportFleetUsageRequest extends FormRequest
             'end_date' => Carbon::parse($this->end_date)->endOfDay(),
         ]);
     }
-
     public function messages(): array
     {
         return [

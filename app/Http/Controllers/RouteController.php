@@ -85,8 +85,7 @@ class RouteController extends Controller
             'data' => $route->fresh(),
         ], 200);
     }
-<<<<<<< HEAD
-=======
+
     public function inactive()
 {
     $routes = Route::onlyTrashed()
@@ -98,5 +97,4 @@ class RouteController extends Controller
         'data' => $routes,
     ], 200);
 }
->>>>>>> base-datos/rutas
 }
