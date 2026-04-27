@@ -17,7 +17,12 @@ return new class extends Migration
             $table->timestamp('start_date');
             $table->timestamp('end_date');
 
-            $table->string('status', 20)->default('pending');
+            $table->enum('status', [
+                'approved',
+                'rejected',
+                'pending'
+            ])->default('pending');
+
             $table->text('observations')->nullable();
 
             $table->foreignId('approved_by')

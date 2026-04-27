@@ -26,7 +26,7 @@ class UserSeeder extends Seeder
             'email' => 'driver@example.com',
             'telephone' => '7777-7777',
             'password' => Hash::make('password123'),
-            'role_id' => 2 // driver
+            'role_id' => 3 // driver
         ]);
 
         User::create([
@@ -34,7 +34,7 @@ class UserSeeder extends Seeder
             'email' => 'operator@example.com',
             'telephone' => '6666-6666',
             'password' => Hash::make('password123'),
-            'role_id' => 3 // operator
+            'role_id' => 2 // operator
         ]);
     }
 }

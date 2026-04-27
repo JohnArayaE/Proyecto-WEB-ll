@@ -23,6 +23,9 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             RouteSeeder::class,
             VehicleSeeder::class,
+            MaintenanceSeeder::class,
+            RequestSeeder::class,
+            TripSeeder::class,
         ]);
     }
 }

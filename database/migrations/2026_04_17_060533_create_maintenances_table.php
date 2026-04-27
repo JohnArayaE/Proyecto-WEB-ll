@@ -18,7 +18,11 @@ return new class extends Migration
             $table->timestamp('end_date')->nullable();
             $table->text('description');
             $table->decimal('cost', 10, 2);
-            $table->string('status', 20);
+            $table->enum('status', [
+                'in_progress',
+                'completed',
+                'cancelled'
+            ])->default('in_progress');
             
             $table->softDeletes();
             $table->timestamps();

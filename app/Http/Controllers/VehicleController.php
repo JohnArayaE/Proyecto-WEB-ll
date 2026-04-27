@@ -12,10 +12,25 @@ class VehicleController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
-        $vehicles = Vehicle::whereNull('deleted_at')->latest()->paginate(10);
+        $status = $request->get('status_filter', 'available');
+        
+        $query = Vehicle::query();
+
+        if ($status === 'all') {
+            $query->withTrashed(); 
+        } 
+        elseif ($status === 'inactive') {
+            $query->onlyTrashed(); 
+        } 
+        else {
+
+            $query->where('status', $status)
+                ->whereNull('deleted_at'); 
+        }
+
+        $vehicles = $query->latest()->paginate(10);
 
         return response()->json([
             'message' => 'List of vehicles',

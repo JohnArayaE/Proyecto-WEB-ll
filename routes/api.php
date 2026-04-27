@@ -114,6 +114,9 @@ Route::patch('maintenance/{maintenance}/restore', [MaintenanceController::class,
     ->withTrashed()
     ->middleware('auth:sanctum', 'can:restore,maintenance');
 
+Route::patch('maintenances/{maintenance}/completed', [MaintenanceController::class, 'completed'])
+    ->middleware('auth:sanctum');
+
 Route::apiResource('maintenance', MaintenanceController::class)
     ->middleware('auth:sanctum')
     ->middlewareFor('index', 'can:viewAny,App\Models\Maintenance')
