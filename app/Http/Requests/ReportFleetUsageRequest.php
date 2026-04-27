@@ -19,10 +19,6 @@ class ReportFleetUsageRequest extends FormRequest
             'end_date' => ['required', 'date', 'after:start_date'],
         ];
     }
-
-    /**
-     * Normalizar fechas antes de usarlas en el controlador
-     */
     protected function passedValidation(): void
     {
         $this->merge([

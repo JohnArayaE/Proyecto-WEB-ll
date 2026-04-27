@@ -8,7 +8,7 @@ class ReportAvailableVehiclesRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return true; // puedes luego meter roles si quieres
+        return true;
     }
 
     public function rules(): array
