@@ -10,7 +10,7 @@ use App\Http\Controllers\VehicleController;
 use App\Http\Controllers\RouteController;
 use App\Http\Controllers\RequestController;
 use App\Http\Controllers\AssignmentController;
-
+use App\Http\Controllers\ReportController;
 
 Route::post('login', [AuthController::class, 'login']);
 Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
@@ -141,4 +141,6 @@ Route::apiResource('assignments', AssignmentController::class)
             'message' => 'Asignación no encontrada.',
         ], 404);
     });
-
+//Reportes
+Route::get('reports/available-vehicles', [ReportController::class, 'availableVehicles'])
+    ->middleware('auth:sanctum');
