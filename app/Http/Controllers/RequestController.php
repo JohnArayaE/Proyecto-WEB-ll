@@ -19,7 +19,7 @@ class RequestController extends Controller
 
         return response()->json([
             'message' => 'Listado de Solicitud',
-            'data' => $request,
+            'data' => $request->load('vehicle')->load('user')->load('approver'),
         ], 200);
     }
 
@@ -51,7 +51,7 @@ class RequestController extends Controller
 
         return response()->json([
             'message' => 'Solicitud Creado Correctamente',
-            'data' => $request
+            'data' => $newRequest->load('vehicle')->load('user')->load('approver')
         ], 201);
     }
 
@@ -64,7 +64,7 @@ class RequestController extends Controller
         //dd($request);
         return response()->json([
             'message' => 'Solicitud encontrado correctamente.',
-            'data' => $request,
+            'data' => $request->load('vehicle')->load('user')->load('approver'),
         ], 200);
     }
 
@@ -140,8 +140,6 @@ class RequestController extends Controller
         if ($vehicle) {
             $vehicle->status = 'unavailable';
             $vehicle->save();
-            $request->status = 'active';
-            $request->save();
         }
         $request->restore();
 
@@ -178,56 +176,4 @@ class RequestController extends Controller
         ], 200);
     }
     
-    public function accepted(RequestModel $request)
-    {
-        if ($request->status !== 'pending') {
-            return response()->json([
-                'message' => 'La solicitud no se puede aprobar.'
-            ], 422);
-        }
-
-        $vehicle = $request->vehicle;
-
-        if (!$vehicle || $vehicle->status !== 'available') {
-            return response()->json([
-                'message' => 'El vehículo no está disponible.'
-            ], 422);
-        }
-
-        $vehicle->status = 'unavailable';
-        $vehicle->save();
-
-        $request->status = 'approved';
-        $request->save();
-
-        return response()->json([
-            'message' => 'Solicitud aprobada correctamente.',
-            'data' => $request->load(['vehicle', 'user', 'approver']),
-        ], 200);
-    }
-
-    public function rejected(RequestModel $request)
-    {
-        if ($request->status !== 'pending') {
-            return response()->json([
-                'message' => 'La solicitud no se puede rechazar.'
-            ], 422);
-        }
-
-        $vehicle = $request->vehicle;
-
-        if ($vehicle) {
-            $vehicle->status = 'available';
-            $vehicle->save();
-        }
-
-        $request->status = 'rejected';
-        $request->save();
-
-        return response()->json([
-            'message' => 'Solicitud rechazada correctamente.',
-            'data' => $request->load(['vehicle', 'user', 'approver']),
-        ], 200);
-    }
-
 }

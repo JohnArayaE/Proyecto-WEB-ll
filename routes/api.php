@@ -82,12 +82,6 @@ Route::apiResource('routes', RouteController::class)
         ], 404);
     });
 
-Route::patch('requests/{request}/accepted', [RequestController::class, 'accepted'])
-    ->middleware('auth:sanctum');
-
-Route::patch('requests/{request}/rejected', [RequestController::class, 'rejected'])
-    ->middleware('auth:sanctum');   
-
 Route::patch('request/{request}/restore', [RequestController::class, 'restore'])
     ->withTrashed()
     ->middleware('auth:sanctum', 'can:restore,request');
