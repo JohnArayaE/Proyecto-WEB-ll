@@ -174,5 +174,16 @@ class MaintenanceController extends Controller
             ], 422);
         }
     }
+        public function inactive()
+    {
+        $assignments = Maintenance::onlyTrashed()
+            ->with('vehicle')
+            ->latest()
+            ->paginate(10);
 
+        return response()->json([
+            'message' => 'Listado de mantenimeintos inactivas',
+            'data' => $assignments,
+        ], 200);
+    }
 }

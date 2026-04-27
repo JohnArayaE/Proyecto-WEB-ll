@@ -110,6 +110,10 @@ Route::get('requests/{request}/with-all', [RequestController::class, 'showWithAl
     ->middleware(['auth:sanctum', 'can:showWithAll,request']); 
     
 
+Route::get('maintenance/inactive', [MaintenanceController::class, 'inactive'])
+    ->withTrashed()
+    ->middleware('auth:sanctum');
+
 Route::patch('maintenance/{maintenance}/restore', [MaintenanceController::class, 'restore'])
     ->withTrashed()
     ->middleware('auth:sanctum', 'can:restore,maintenance');
