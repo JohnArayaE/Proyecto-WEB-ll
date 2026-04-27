@@ -36,8 +36,18 @@ class Trip extends Model
         ];
     }
 
-     public function vehicle(): BelongsTo
+    public function vehicle(): BelongsTo
     {
-        return $this->belongsTo(Vehicle::class, 'vehicle_id', 'id');
+        return $this->belongsTo(Vehicle::class, 'vehicle_id');
     }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+    public function route(): BelongsTo
+    {
+        return $this->belongsTo(Route::class, 'route_id');
+    }
+
 }

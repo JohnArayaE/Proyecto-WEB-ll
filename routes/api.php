@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\MaintenanceController;
+use App\Http\Controllers\TripController;
 use App\Models\Maintenance;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -117,6 +118,23 @@ Route::apiResource('maintenance', MaintenanceController::class)
     ->missing(function (Request $request) {
         return response()->json([
             'message' => 'Mantenimeintos no encontrado.',
+        ], 404);
+    }); 
+
+Route::patch('trip/{trip}/restore', [TripController::class, 'restore'])
+    ->withTrashed()
+    ->middleware('auth:sanctum', 'can:restore,trip');
+
+Route::apiResource('trip', TripController::class)
+    ->middleware('auth:sanctum')
+    ->middlewareFor('index', 'can:viewAny,App\Models\Trip')
+    ->middlewareFor('show', 'can:view,trip')
+    ->middlewareFor('store', 'can:create,App\Models\Trip')
+    ->middlewareFor('update', 'can:update,trip')
+    ->middlewareFor('destroy', 'can:delete,trip')
+    ->missing(function (Request $request) {
+        return response()->json([
+            'message' => 'Viaje no encontrado.',
         ], 404);
     }); 
 
