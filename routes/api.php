@@ -165,3 +165,9 @@ Route::apiResource('assignments', AssignmentController::class)
 //Reportes
 Route::get('reports/available-vehicles', [ReportController::class, 'availableVehicles'])
     ->middleware('auth:sanctum');
+
+Route::get('reports/fleet-usage', [ReportController::class, 'fleetUsage'])
+    ->middleware('auth:sanctum');
+
+Route::get('reports/driver-history/{user}', [ReportController::class, 'driverHistory'])
+    ->middleware('auth:sanctum');
