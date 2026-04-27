@@ -26,9 +26,9 @@ return new class extends Migration
             IF NOT EXISTS (
                 SELECT 1 FROM vehicles
                 WHERE id = p_vehicle_id
-                AND status = \'active\'
+                AND status = \'available\'
             ) THEN
-                RAISE EXCEPTION \'Vehicle is not active or does not exist\';
+                RAISE EXCEPTION \'Vehicle is not available or does not exist\';
             END IF;
 
             IF p_departure >= p_return THEN
