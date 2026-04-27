@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('fuel_type')->nullable();
             $table->string('image')->nullable();
 
-            $table->string('status')->default('available');
+            $table->enum('status', ['available', 'unavailable', 'under maintence'])->default('available');
 
             $table->softDeletes();
             $table->timestamps();
