@@ -45,7 +45,7 @@ class VehicleSeeder extends Seeder
                 'capacity' => 3,
                 'fuel_type' => 'Diesel',
                 'image' => null,
-                'status' => 'under maintence',
+                'status' => 'under maintenance',
                 'created_at' => now(),
                 'updated_at' => now(),
             ],

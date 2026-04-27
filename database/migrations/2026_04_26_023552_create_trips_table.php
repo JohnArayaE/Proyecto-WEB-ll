@@ -25,7 +25,11 @@ return new class extends Migration
             $table->float('km_return')->nullable();
 
             $table->text('observations')->nullable();
-            $table->string('status', 20);
+            $table->enum('status', [
+                'in_progress',
+                'completed',
+                'cancelled'
+            ])->default('in_progress');
 
             $table->timestamps();
             $table->softDeletes();
