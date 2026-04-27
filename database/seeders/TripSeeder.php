@@ -6,6 +6,7 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use App\Models\Request;
 use App\Models\Route;
+use Carbon\Carbon;
 
 class TripSeeder extends Seeder
 {
@@ -30,9 +31,10 @@ class TripSeeder extends Seeder
             $statusOptions = ['in_progress', 'completed', 'cancelled'];
             $status = $statusOptions[array_rand($statusOptions)];
 
-            $departure = $request->start_date;
+            $departure = Carbon::parse($request->start_date);
+
             $return = $status === 'completed'
-                ? (clone $departure)->addHours(rand(2, 8))
+                ? $departure->copy()->addHours(rand(2, 8))
                 : null;
 
             $kmStart = rand(10000, 50000);
