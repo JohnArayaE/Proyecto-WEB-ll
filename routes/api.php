@@ -8,10 +8,11 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\VehicleController;
-use App\Http\Controllers\RouteController;
 use App\Http\Controllers\RequestController;
 use App\Http\Controllers\AssignmentController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\RouteController;
+
 
 Route::post('login', [AuthController::class, 'login']);
 Route::post('logout', [AuthController::class, 'logout'])->middleware('auth:sanctum');
@@ -55,6 +56,7 @@ Route::apiResource('vehicle', VehicleController::class)
             'message' => 'Usuario no encontrado.',
         ], 404);
     });
+
 // Restaurar ruta eliminada
 Route::patch('routes/{route}/restore', [RouteController::class, 'restore'])
     ->withTrashed()
@@ -62,6 +64,11 @@ Route::patch('routes/{route}/restore', [RouteController::class, 'restore'])
 
 
 // CRUD completo de rutas
+
+Route::get('routes/inactive', [RouteController::class, 'inactive'])
+    ->middleware(['auth:sanctum', 'can:viewAny,App\Models\Route']);
+
+
 Route::apiResource('routes', RouteController::class)
     ->middleware('auth:sanctum')
     ->middlewareFor('index', 'can:viewAny,App\Models\Route')
@@ -74,7 +81,6 @@ Route::apiResource('routes', RouteController::class)
             'message' => 'Ruta no encontrada.',
         ], 404);
     });
-
 
 Route::patch('request/{request}/restore', [RequestController::class, 'restore'])
     ->withTrashed()
@@ -171,3 +177,4 @@ Route::get('reports/fleet-usage', [ReportController::class, 'fleetUsage'])
 
 Route::get('reports/driver-history/{user}', [ReportController::class, 'driverHistory'])
     ->middleware('auth:sanctum');
+
