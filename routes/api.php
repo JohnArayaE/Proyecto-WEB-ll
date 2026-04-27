@@ -36,6 +36,9 @@ Route::patch('routes/{route}/restore', [RouteController::class, 'restore'])
 
 
 // CRUD completo de rutas
+Route::get('routes/inactive', [RouteController::class, 'inactive'])
+    ->middleware(['auth:sanctum', 'can:viewAny,App\Models\Route']);
+
 Route::apiResource('routes', RouteController::class)
     ->middleware('auth:sanctum')
     ->middlewareFor('index', 'can:viewAny,App\Models\Route')

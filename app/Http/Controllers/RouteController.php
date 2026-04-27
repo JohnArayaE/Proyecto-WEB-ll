@@ -85,4 +85,15 @@ class RouteController extends Controller
             'data' => $route->fresh(),
         ], 200);
     }
+    public function inactive()
+{
+    $routes = Route::onlyTrashed()
+        ->latest()
+        ->paginate(10);
+
+    return response()->json([
+        'message' => 'Listado de rutas inactivas',
+        'data' => $routes,
+    ], 200);
+}
 }
