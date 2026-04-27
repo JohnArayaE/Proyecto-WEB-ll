@@ -6,87 +6,102 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Requests\ReportAvailableVehiclesRequest;
 use App\Http\Requests\ReportFleetUsageRequest;
 use App\Models\User;
+use App\Models\Vehicle;
 class ReportController extends Controller
 {
-    public function availableVehicles(ReportAvailableVehiclesRequest $request)
-    {
-        $start = $request->start_date;
-        $end = $request->end_date;
 
-        $vehicles = DB::table('vehicles as v')
 
-            
-            ->leftJoin('assignments as a', function ($join) use ($start, $end) {
-                $join->on('v.id', '=', 'a.vehicle_id')
-                     ->whereNull('a.deleted_at')
-                     ->where('a.status', '!=', 'cancelled')
-                     ->where(function ($q) use ($start, $end) {
-                         $q->whereBetween('a.start_date', [$start, $end])
-                           ->orWhereBetween('a.end_date', [$start, $end]);
-                     });
-            })
 
-            
-            ->leftJoin('maintenances as m', function ($join) use ($start, $end) {
-                $join->on('v.id', '=', 'm.vehicle_id')
-                     ->whereNull('m.deleted_at')
-                     ->where('m.status', 'in_progress')
-                     ->where(function ($q) use ($start, $end) {
-                         $q->whereBetween('m.start_date', [$start, $end])
-                           ->orWhereBetween('m.end_date', [$start, $end]);
-                     });
-            })
-
-            
-            ->leftJoin('requests as r', function ($join) use ($start, $end) {
-                $join->on('v.id', '=', 'r.vehicle_id')
-                     ->whereNull('r.deleted_at')
-                     ->where('r.status', 'approved')
-                     ->where(function ($q) use ($start, $end) {
-                         $q->whereBetween('r.start_date', [$start, $end])
-                           ->orWhereBetween('r.end_date', [$start, $end]);
-                     });
-            })
-            ->whereNull('a.id')
-            ->whereNull('m.id')
-            ->whereNull('r.id')
-            ->select(
-                'v.id',
-                'v.plate',
-                'v.brand',
-                'v.model',
-                'v.year',
-                'v.image'
-            )
-            ->orderByDesc('v.id')
-            ->get();
-        return response()->json([
-            'message' => 'Vehículos disponibles en el rango seleccionado',
-            'data' => $vehicles
-        ], 200);
-    }
-    public function fleetUsage(ReportFleetUsageRequest $request)
-    {
+public function availableVehicles(ReportAvailableVehiclesRequest $request)
+{
     $start = $request->start_date;
     $end = $request->end_date;
 
-    $report = DB::table('vehicles as v')
-        ->join('trips as t', function ($join) use ($start, $end) {
-            $join->on('v.id', '=', 't.vehicle_id')
-                 ->whereNull('t.deleted_at')
-                 ->where('t.status', 'completed')
+    $query = Vehicle::query()
+
+        ->leftJoin('assignments', function ($join) use ($start, $end) {
+            $join->on('vehicles.id', '=', 'assignments.vehicle_id')
+                 ->whereNull('assignments.deleted_at')
+                 ->where('assignments.status', '!=', 'cancelled')
                  ->where(function ($q) use ($start, $end) {
-                     $q->whereBetween('t.departure_time', [$start, $end])
-                       ->orWhereBetween('t.return_time', [$start, $end]);
+                     $q->whereBetween('assignments.start_date', [$start, $end])
+                       ->orWhereBetween('assignments.end_date', [$start, $end]);
                  });
         })
-        ->select(
-            'v.id',
-            'v.plate',
-            DB::raw('COUNT(t.id) as total_trips'),
-            DB::raw('COALESCE(SUM(t.km_return - t.km_departure), 0) as total_km')
-        )
-        ->groupBy('v.id', 'v.plate')
+
+        ->leftJoin('maintenances', function ($join) use ($start, $end) {
+            $join->on('vehicles.id', '=', 'maintenances.vehicle_id')
+                 ->whereNull('maintenances.deleted_at')
+                 ->where('maintenances.status', 'in_progress')
+                 ->where(function ($q) use ($start, $end) {
+                     $q->whereBetween('maintenances.start_date', [$start, $end])
+                       ->orWhereBetween('maintenances.end_date', [$start, $end]);
+                 });
+        })
+
+        ->leftJoin('requests', function ($join) use ($start, $end) {
+            $join->on('vehicles.id', '=', 'requests.vehicle_id')
+                 ->whereNull('requests.deleted_at')
+                 ->where('requests.status', 'approved')
+                 ->where(function ($q) use ($start, $end) {
+                     $q->whereBetween('requests.start_date', [$start, $end])
+                       ->orWhereBetween('requests.end_date', [$start, $end]);
+                 });
+        })
+
+        ->whereNull('assignments.id')
+        ->whereNull('maintenances.id')
+        ->whereNull('requests.id')
+
+        ->whereNull('vehicles.deleted_at')
+
+        ->select([
+            'vehicles.id',
+            'vehicles.plate',
+            'vehicles.brand',
+            'vehicles.model',
+            'vehicles.year',
+            'vehicles.image',
+        ]);
+
+    $vehicles = $query
+        ->orderByDesc('vehicles.id')
+        ->get();
+
+    return response()->json([
+        'message' => 'Vehículos disponibles en el rango seleccionado',
+        'data' => $vehicles
+    ], 200);
+}
+    public function fleetUsage(ReportFleetUsageRequest $request)
+{
+    $start = $request->start_date;
+    $end = $request->end_date;
+
+    $query = Vehicle::query()
+
+        ->join('trips', function ($join) use ($start, $end) {
+            $join->on('vehicles.id', '=', 'trips.vehicle_id')
+                 ->whereNull('trips.deleted_at')
+                 ->where('trips.status', 'completed')
+                 ->where(function ($q) use ($start, $end) {
+                     $q->whereBetween('trips.departure_time', [$start, $end])
+                       ->orWhereBetween('trips.return_time', [$start, $end]);
+                 });
+        })
+
+        ->whereNull('vehicles.deleted_at')
+
+        ->select([
+            'vehicles.id',
+            'vehicles.plate',
+            DB::raw('COUNT(trips.id) as total_trips'),
+            DB::raw('COALESCE(SUM(trips.km_return - trips.km_departure), 0) as total_km'),
+        ])
+
+        ->groupBy('vehicles.id', 'vehicles.plate');
+
+    $report = $query
         ->orderByDesc('total_trips')
         ->get();
 
@@ -94,47 +109,49 @@ class ReportController extends Controller
         'message' => 'Uso de flotilla por periodo',
         'data' => $report
     ], 200);
-    }
-    public function driverHistory(User $user)
-    {
-    $history = DB::table('users as u')
+}
 
-        ->leftJoin('trips as t', function ($join) {
-            $join->on('u.id', '=', 't.user_id')
-                 ->whereNull('t.deleted_at');
+public function driverHistory(User $user)
+{
+    $query = User::query()
+
+        ->leftJoin('trips', function ($join) {
+            $join->on('users.id', '=', 'trips.user_id')
+                 ->whereNull('trips.deleted_at');
         })
 
-        ->leftJoin('vehicles as v', 'v.id', '=', 't.vehicle_id')
+        ->leftJoin('vehicles', 'vehicles.id', '=', 'trips.vehicle_id')
 
-        ->leftJoin('requests as r', function ($join) {
-            $join->on('u.id', '=', 'r.user_id')
-                 ->whereNull('r.deleted_at');
+        ->leftJoin('requests', function ($join) {
+            $join->on('users.id', '=', 'requests.user_id')
+                 ->whereNull('requests.deleted_at');
         })
 
-        ->leftJoin('vehicles as vr', 'vr.id', '=', 'r.vehicle_id')
+        ->leftJoin('vehicles as request_vehicle', 'request_vehicle.id', '=', 'requests.vehicle_id')
 
-        ->where('u.id', $user->id)
+        ->where('users.id', $user->id)
 
-        ->select(
-            'u.id as driver_id',
-            'u.name as driver_name',
+        ->select([
+            'users.id as driver_id',
+            'users.name as driver_name',
 
             // Trips
-            't.id as trip_id',
-            't.status as trip_status',
-            't.departure_time',
-            't.return_time',
-            'v.plate as trip_vehicle',
+            'trips.id as trip_id',
+            'trips.status as trip_status',
+            'trips.departure_time',
+            'trips.return_time',
+            'vehicles.plate as trip_vehicle',
 
             // Requests
-            'r.id as request_id',
-            'r.status as request_status',
-            'r.start_date',
-            'r.end_date',
-            'vr.plate as request_vehicle'
-        )
+            'requests.id as request_id',
+            'requests.status as request_status',
+            'requests.start_date',
+            'requests.end_date',
+            'request_vehicle.plate as request_vehicle',
+        ]);
 
-        ->orderByDesc('t.id')
+    $history = $query
+        ->orderByDesc('trips.id')
         ->get();
 
     return response()->json([
