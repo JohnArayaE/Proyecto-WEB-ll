@@ -37,4 +37,25 @@ class Vehicle extends Model
     {
         return $this->hasMany(Trip::class, 'vehicle_id', 'id');
     }
+
+   
+    public function assignments(): HasMany
+    {
+        return $this->hasMany(Assignment::class, 'vehicle_id', 'id');
+    }
+
+   
+    public function maintenances(): HasMany
+    {
+        return $this->hasMany(Maintenance::class, 'vehicle_id', 'id');
+    }
+
+    
+    public function requests(): HasMany
+    {
+        return $this->hasMany(Request::class, 'vehicle_id', 'id');
+    }
+
+
+
 }
