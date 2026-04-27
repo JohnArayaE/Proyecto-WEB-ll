@@ -8,9 +8,6 @@ use App\Http\Requests\ReportFleetUsageRequest;
 use App\Models\User;
 class ReportController extends Controller
 {
-    /**
-     * Reporte 1: Disponibilidad de vehículos por rango de fecha
-     */
     public function availableVehicles(ReportAvailableVehiclesRequest $request)
     {
         $start = $request->start_date;
@@ -18,7 +15,7 @@ class ReportController extends Controller
 
         $vehicles = DB::table('vehicles as v')
 
-            // 🔹 ASIGNACIONES
+            
             ->leftJoin('assignments as a', function ($join) use ($start, $end) {
                 $join->on('v.id', '=', 'a.vehicle_id')
                      ->whereNull('a.deleted_at')
@@ -29,7 +26,7 @@ class ReportController extends Controller
                      });
             })
 
-            // 🔹 MANTENIMIENTOS
+            
             ->leftJoin('maintenances as m', function ($join) use ($start, $end) {
                 $join->on('v.id', '=', 'm.vehicle_id')
                      ->whereNull('m.deleted_at')
@@ -40,7 +37,7 @@ class ReportController extends Controller
                      });
             })
 
-            // 🔹 REQUESTS
+            
             ->leftJoin('requests as r', function ($join) use ($start, $end) {
                 $join->on('v.id', '=', 'r.vehicle_id')
                      ->whereNull('r.deleted_at')
@@ -50,13 +47,9 @@ class ReportController extends Controller
                            ->orWhereBetween('r.end_date', [$start, $end]);
                      });
             })
-
-            // 🔥 FILTRO FINAL (disponibles)
             ->whereNull('a.id')
             ->whereNull('m.id')
             ->whereNull('r.id')
-
-            // 🔥 ESPECIFICACIONES COMPLETAS
             ->select(
                 'v.id',
                 'v.plate',
@@ -65,10 +58,8 @@ class ReportController extends Controller
                 'v.year',
                 'v.image'
             )
-
             ->orderByDesc('v.id')
             ->get();
-
         return response()->json([
             'message' => 'Vehículos disponibles en el rango seleccionado',
             'data' => $vehicles
